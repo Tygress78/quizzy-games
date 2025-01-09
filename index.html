@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion Microsoft</title>
+    <script src="https://alcdn.msauth.net/browser/2.29.1/js/msal.min.js"></script>
+</head>
+<body>
+    <h2>Connexion avec Microsoft</h2>
+    <button id="signInBtn">Se connecter avec Microsoft</button>
+    <div id="status"></div>
+
+    <script>
+        // Configuration de MSAL.js
+        const msalConfig = {
+            auth: {
+                clientId: "VOTRE_CLIENT_ID",  // Remplacez par votre Client ID
+                authority: "https://login.microsoftonline.com/common",  // Utilisez "common" pour plusieurs locataires
+                redirectUri: "https://<votre-utilisateur>.github.io/<votre-repository>/"  // URL de redirection (assurez-vous que cela correspond à la config dans Azure)
+            }
+        };
+
+        const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+        // Fonction de gestion de la connexion
+        const signIn = () => {
+            const loginRequest = {
+                scopes: ["user.read"]  // Scopes requis (exemple: accès aux informations de l'utilisateur)
+            };
+
+            msalInstance.loginPopup(loginRequest)
+                .then(response => {
+                    console.log("Utilisateur connecté:", response);
+                    document.getElementById('status').innerHTML = "Connecté en tant que " + response.account.username;
+                })
+                .catch(error => {
+                    console.error("Erreur de connexion:", error);
+                    document.getElementById('status').innerHTML = "Erreur de connexion";
+                });
+        };
+
+        // Ajouter un événement pour le bouton de connexion
+        document.getElementById('signInBtn').addEventListener('click', signIn);
+    </script>
+</body>
+</html>
